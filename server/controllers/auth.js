@@ -1,17 +1,18 @@
-import User from "../models/User";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+
+import User from "../models/User.js";
 
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
-export const register = async (request: any, response: any) => {
+export const register = async (request, response) => {
   try {
     const { userName, password } = request.body;
 
-    const isTaken: any = await User.findOne({ userName });
+    const isTaken = await User.findOne({ userName });
     if (isTaken) {
       return response.status(402).json({
         message: "Current username is already taken",
@@ -21,13 +22,26 @@ export const register = async (request: any, response: any) => {
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(password, salt);
 
-    const newUser = new User({
+    const user = new User({
       userName,
       password: hash,
     });
-    await newUser.save();
+
+    await user.save();
+
+    const token = jwt.sign(
+      {
+        id: user._id,
+      },
+      `${JWT_SECRET}`,
+      {
+        expiresIn: "30d",
+      }
+    );
+
     response.json({
-      newUser,
+      user,
+      token,
       message: "Registration was successful",
     });
     console.log("Registration successful");
@@ -36,7 +50,7 @@ export const register = async (request: any, response: any) => {
   }
 };
 
-export const login = async (request: any, response: any) => {
+export const login = async (request, response) => {
   try {
     const { userName, password } = request.body;
 
@@ -77,7 +91,7 @@ export const login = async (request: any, response: any) => {
 };
 
 // Get user, всегда при обновлении страницы.
-export const getUser = async (request: any, response: any) => {
+export const getUser = async (request, response) => {
   try {
     const user = await User.findById(request.userId);
 

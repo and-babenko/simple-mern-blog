@@ -5,12 +5,12 @@ dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
-export const checkAuth = (req: any, res: any, next: any) => {
-  const token = (req.headers.autorization || "").replase(/Bearer\s?/, "");
+export const checkAuth = (req, res, next) => {
+  const token = (req.headers.authorization || "").replace(/Bearer\s?/, "");
 
   if (token) {
     try {
-      const decoded: any = jwt.verify(token, `${JWT_SECRET}`);
+      const decoded = jwt.verify(token, `${JWT_SECRET}`);
       req.userId = decoded.id;
       console.log(token, decoded, decoded.id);
 
