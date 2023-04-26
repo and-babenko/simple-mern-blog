@@ -44,7 +44,6 @@ export const register = async (request, response) => {
       token,
       message: "Registration was successful",
     });
-    console.log("Registration successful");
   } catch (error) {
     console.log("Registration error", error);
   }

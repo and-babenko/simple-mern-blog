@@ -2,9 +2,11 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
+import fileUpload from "express-fileupload";
 
 import authRoute from "./routes/auth.js";
 import postsRoute from "./routes/posts.js";
+import commentsRoute from "./routes/comment.js";
 
 const app = express();
 dotenv.config();
@@ -18,10 +20,13 @@ const DB_NAME = process.env.DB_NAME;
 //Middlewares
 app.use(cors());
 app.use(express.json());
+app.use(fileUpload()); // Подключаем загрузку картинок!
+app.use(express.static("uploads")); // Прописываем путь к картинкам.
 
 // Routes
 app.use("/api/auth", authRoute);
 app.use("/api/posts", postsRoute);
+app.use("/api/comments", commentsRoute);
 
 (async function start() {
   try {

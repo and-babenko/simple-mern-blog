@@ -1,6 +1,8 @@
 import axios from "axios";
 
 // АПИ внизу? Базовый УРЛ.
+
+// TODO Вынести в конфиг (и изображение в одном посте)
 const instance = axios.create({
   baseURL: "http://localhost:9143/api",
 });
