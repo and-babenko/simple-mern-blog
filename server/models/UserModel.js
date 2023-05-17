@@ -2,15 +2,20 @@ import mongoose from "mongoose";
 
 const UserScema = new mongoose.Schema(
   {
-    userName: {
+    email: {
       type: String,
       required: true,
       unique: true,
     },
-    password: {
+    userName: {
       type: String,
       required: true,
     },
+    passwordHash: {
+      type: String,
+      required: true,
+    },
+    avatarUrl: String,
     posts: [
       {
         type: mongoose.Schema.Types.ObjectId,

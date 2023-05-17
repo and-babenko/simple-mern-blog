@@ -2,9 +2,6 @@ import mongoose from "mongoose";
 
 const PostSchema = new mongoose.Schema(
   {
-    userName: {
-      type: String,
-    },
     title: {
       type: String,
       required: true,
@@ -17,13 +14,18 @@ const PostSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    tags: {
+      type: Array,
+      default: [],
+    },
     views: {
       type: Number,
       default: 0,
     },
-    author: {
+    authorId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
     },
     comments: [
       {

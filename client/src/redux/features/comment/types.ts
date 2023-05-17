@@ -1,6 +1,6 @@
 export interface ICommentItem {
   comment: string;
-  author: string;
+  _id: string;
 }
 
 export interface ICreateCommentData {

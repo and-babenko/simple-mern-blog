@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+
 import axios from "../../../utils/axios";
 import { CommentSliceType, ICommentItem, ICreateCommentData } from "./types";
 
@@ -24,6 +25,18 @@ export const createComment = createAsyncThunk<ICommentItem, ICreateCommentData>(
   }
 );
 
+export const getPostComments = createAsyncThunk<any, any>(
+  "comment/getComments",
+  async (postId, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.get(`/posts/comments/${postId}`);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+
 export const commentSlice = createSlice({
   name: "comment",
   initialState,
@@ -40,7 +53,21 @@ export const commentSlice = createSlice({
     builder.addCase(createComment.rejected, (state, action) => {
       state.loading = false;
     });
+
+    // get comments
+    builder.addCase(getPostComments.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(getPostComments.fulfilled, (state, action) => {
+      state.loading = false;
+      state.comments = action.payload;
+    });
+    builder.addCase(getPostComments.rejected, (state, action) => {
+      state.loading = false;
+    });
   },
 });
 
 export default commentSlice.reducer;
+
+export const commentsSelector = (state: RootState) => state.comment.comments;

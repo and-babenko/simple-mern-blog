@@ -1,5 +1,5 @@
-import Post from "../models/Post.js";
-import Comment from "../models/Comment.js";
+import Post from "../models/PostModel.js";
+import Comment from "../models/CommentModel.js";
 
 export const createComment = async (req, res) => {
   try {
@@ -21,5 +21,20 @@ export const createComment = async (req, res) => {
       message: "Something went wrong in creating comment",
       error,
     });
+  }
+};
+
+export const getCommentsByPosts = async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    const list = await Promise.all(
+      post.comments.map((comment) => {
+        return Comment.findById(comment);
+      })
+    );
+    res.json(list);
+  } catch (error) {
+    console.log("Getting comments error", err);
+    res.json({ message: "Getting comments error" });
   }
 };

@@ -14,13 +14,20 @@ import { IPostItem } from "../redux/features/post/types";
 import { authSelector } from "redux/features/auth/auth.slice";
 import { removePost } from "redux/features/post/post.slice";
 import { toast } from "react-toastify";
-import { createComment } from "redux/features/comment/comment.slice";
+import {
+  commentsSelector,
+  createComment,
+  getPostComments,
+} from "redux/features/comment/comment.slice";
+import { CommentItem } from "components/CommentItem";
 
 export const OnePostPage = () => {
   const params = useParams();
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+
   const { user } = useSelector(authSelector);
+  const comments = useSelector(commentsSelector);
 
   const [post, setPost] = useState<IPostItem | null>(null);
   const [comment, setComment] = useState("");
@@ -37,6 +44,18 @@ export const OnePostPage = () => {
   useEffect(() => {
     fetchPost();
   }, [fetchPost]);
+
+  const fetchComments = useCallback(async () => {
+    try {
+      dispatch(getPostComments(params.id));
+    } catch (error) {
+      console.log(error);
+    }
+  }, [dispatch, params.id]);
+
+  useEffect(() => {
+    fetchComments();
+  }, [fetchComments]);
 
   const removePostHandler = () => {
     try {
@@ -60,6 +79,8 @@ export const OnePostPage = () => {
           })
         );
       }
+
+      setComment("");
     } catch (error) {
       console.log(error);
     }
@@ -149,6 +170,14 @@ export const OnePostPage = () => {
               Send comment
             </button>
           </form>
+
+          {comments && comments.length > 0 ? (
+            comments?.map((cmt) => <CommentItem key={cmt._id} cmt={cmt} />)
+          ) : (
+            <p className="flex justify-center items-center mt-5 text-xl text-white">
+              No comments
+            </p>
+          )}
         </div>
       </div>
     </>
