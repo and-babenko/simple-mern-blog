@@ -1,10 +1,12 @@
+import fs from "fs";
+
 import PostModel from "../models/PostModel.js";
 import UserModel from "../models/UserModel.js";
+import { baseUrl } from "../config.js";
 
 export const getAllPosts = async (request, response) => {
   try {
-    const postsInstance = await PostModel.find()
-      .sort("-createdAt");
+    const postsInstance = await PostModel.find().sort("-createdAt");
 
     if (!postsInstance) {
       return response.status(204).json({
@@ -130,6 +132,12 @@ export const removePost = async (request, response) => {
         message: "Post you trying to delete does not exist",
       });
 
+    const imagePath = postInstance.imgUrl;
+    if (imagePath) {
+      const replacedPath = imagePath.replace(/http:\/\/localhost:9143\//, "");
+      fs.unlinkSync(replacedPath);
+    }
+
     await UserModel.findByIdAndUpdate(request.userId, {
       $pull: {
         posts: postId,
@@ -153,5 +161,17 @@ export const getPostsByUser = async (request, response) => {
   } catch (error) {
     console.log("Getting users posts error", error);
     response.status(500).json({ message: "Getting users posts error" });
+  }
+};
+
+export const uploadImage = (request, response) => {
+  try {
+    const imagePath = `${baseUrl}uploads/postImages/${request.file.filename}`;
+    response.status(200).json(imagePath);
+  } catch (error) {
+    console.log("Post Image Upload Error", error);
+    return response.status(500).json({
+      message: "Post Image Upload Error",
+    });
   }
 };

@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
+import { baseUrl } from "../config.js";
 import UserModel from "../models/UserModel.js";
 
 dotenv.config();
@@ -137,6 +138,18 @@ export const getUser = async (request, response) => {
     console.log("Login error", error);
     return response.status(500).json({
       message: "No Access",
+    });
+  }
+};
+
+export const uploadAvatar = (request, response) => {
+  try {
+    const imagePath = `${baseUrl}uploads/userAvatars/${request.file.filename}`;
+    response.status(200).json(imagePath);
+  } catch (error) {
+    console.log("Avatar Upload Error", error);
+    return response.status(500).json({
+      message: "Avatar Upload Error",
     });
   }
 };
